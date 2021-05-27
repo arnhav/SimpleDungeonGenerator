@@ -19,23 +19,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class DungeonGenerator {
 
-    public static void createWorld(String worldName){
-        System.out.println("Creating world...");
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        worldCreator.generator(new EmptyChunkGenerator());
-
-        World world = worldCreator.createWorld();
-        if (world == null){
-            SimpleDungeonGenerator.instance().getLogger().severe("World Creation Error!");
-            return;
-        }
-        world.setGameRule(GameRule.DO_FIRE_TICK, false);
-        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
-        world.setGameRule(GameRule.MOB_GRIEFING, false);
-        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-        System.out.println("World created...");
-    }
-
     public static DungeonFloor generateDungeon(String tileset, String worldName){
         File tilesetFolder = new File(FileManager.getTilesetsFolder(), tileset);
         DungeonFloorConfiguration dungeonFloorConfiguration = FileManager.readTilesetConfig(tilesetFolder);
@@ -69,12 +52,30 @@ public class DungeonGenerator {
         return dungeonFloor;
     }
 
-    public static void placeRooms(DungeonFloor dungeonFloor){
+    public static boolean createWorld(String worldName){
+        System.out.println("Creating world...");
+        WorldCreator worldCreator = new WorldCreator(worldName);
+        worldCreator.generator(new EmptyChunkGenerator());
+
+        World world = worldCreator.createWorld();
+        if (world == null){
+            SimpleDungeonGenerator.instance().getLogger().severe("World Creation Error!");
+            return false;
+        }
+        world.setGameRule(GameRule.DO_FIRE_TICK, false);
+        world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+        world.setGameRule(GameRule.MOB_GRIEFING, false);
+        world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        System.out.println("World created...");
+        return true;
+    }
+
+    public static boolean placeRooms(DungeonFloor dungeonFloor){
         File tilesetFolder = new File(FileManager.getTilesetsFolder(), dungeonFloor.getTileset());
         World world = Bukkit.getWorld(dungeonFloor.getWorld());
         if (world == null){
             SimpleDungeonGenerator.instance().getLogger().severe("World not created!");
-            return;
+            return false;
         }
         System.out.println("Pasting rooms...");
         LinkedBlockingQueue<DungeonRoom> roomsToPaste = dungeonFloor.getRoomsToPaste();
@@ -111,5 +112,6 @@ public class DungeonGenerator {
                 Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
             }
         }, 0);
+        return true;
     }
 }

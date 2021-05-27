@@ -15,10 +15,10 @@ public class DungeonFloorManager {
     public static boolean createDungeonFloorWorld(DungeonFloor df){
         if (df == null) return false;
         String worldName = "SDG_" + dungeonFloors.size();
-        DungeonGenerator.createWorld(worldName);
+        if (!DungeonGenerator.createWorld(worldName)) return false;
         df.setName(worldName);
         df.setWorld(worldName);
-        DungeonGenerator.placeRooms(df);
+        if (!DungeonGenerator.placeRooms(df)) return false;
         dungeonFloors.add(df);
         return true;
     }
