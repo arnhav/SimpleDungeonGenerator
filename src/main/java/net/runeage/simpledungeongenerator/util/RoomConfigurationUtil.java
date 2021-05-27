@@ -16,11 +16,9 @@ public class RoomConfigurationUtil {
     public static RoomConfiguration findAndSelectStartRoom(List<RoomConfiguration> rooms){
         List<RoomConfiguration> shortList = new ArrayList<>();
         for (RoomConfiguration room : rooms){
-            if (room.getRoomType() == RoomType.START)
-                shortList.add(room);
+            if (room.getRoomType() == RoomType.START) shortList.add(room);
         }
-        if (!shortList.isEmpty())
-            return shortList.get(RandomUtil.randomWithRange(0, shortList.size()-1));
+        if (!shortList.isEmpty()) return shortList.get(RandomUtil.randomWithRange(0, shortList.size()-1));
         return null;
     }
 
@@ -51,12 +49,8 @@ public class RoomConfigurationUtil {
             if (rc.getOpenings().size() == 1) continue;
             if (rc.getRoomType() != RoomType.GENERIC) continue;
             if (!rc.getOpenings().containsKey(direction)) continue;
-            if (rc.getLimit() != -1){
-                if (getNumRoomConfigsInDungeon(df, rc) >= rc.getLimit()) continue;
-            }
-            if (!prc.getIncompat().isEmpty()) {
-                if (prc.getIncompat().contains(rc.getFileName())) continue;
-            }
+            if (rc.getLimit() != -1 && getNumRoomConfigsInDungeon(df, rc) >= rc.getLimit()) continue;
+            if (!prc.getIncompat().isEmpty() && prc.getIncompat().contains(rc.getFileName())) continue;
             list.add(rc);
         }
         return list;
