@@ -1,0 +1,9 @@
+name: SimpleDungeonGenerator
+version: ${project.version}
+main: net.runeage.simpledungeongenerator.SimpleDungeonGenerator
+api-version: 1.16
+authors: [ Tyrriel ]
+commands:
+  sdg:
+    description: SimpleDungeonGenerator main command
+    usage: /<command>
