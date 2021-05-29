@@ -1,8 +1,10 @@
 package net.runeage.simpledungeongenerator.objects;
 
+import net.runeage.simpledungeongenerator.objects.generation.DungeonChunk;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -14,6 +16,7 @@ public class DungeonFloor {
     private DungeonFloorConfiguration dungeonFloorConfiguration;
 
     private List<DungeonRoom> rooms;
+    private HashSet<DungeonChunk> takenChunks;
     private LinkedBlockingQueue<DungeonRoom> roomsToPaste;
 
     private boolean ready = false;
@@ -38,6 +41,10 @@ public class DungeonFloor {
 
     public void setRooms(ArrayList<DungeonRoom> rooms) {
         this.rooms = rooms;
+    }
+
+    public void setTakenChunks(HashSet<DungeonChunk> takenChunks) {
+        this.takenChunks = takenChunks;
     }
 
     public void setRoomsToPaste(LinkedBlockingQueue<DungeonRoom> roomsToPaste) {
@@ -68,6 +75,10 @@ public class DungeonFloor {
         return rooms;
     }
 
+    public HashSet<DungeonChunk> getTakenChunks() {
+        return takenChunks;
+    }
+
     public LinkedBlockingQueue<DungeonRoom> getRoomsToPaste() {
         return roomsToPaste;
     }
@@ -92,6 +103,10 @@ public class DungeonFloor {
     public void removeRoom(DungeonRoom dungeonRoom){
         rooms.remove(dungeonRoom);
         roomsToPaste.remove(dungeonRoom);
+    }
+
+    public void addChunks(List<DungeonChunk> list){
+        takenChunks.addAll(list);
     }
 
     @Override

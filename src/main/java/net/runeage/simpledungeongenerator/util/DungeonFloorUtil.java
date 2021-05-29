@@ -94,7 +94,7 @@ public class DungeonFloorUtil {
     }
 
     public static boolean isAlreadyRoom(DungeonFloor dungeonFloor, DungeonChunk chunk){
-        return getDungeonRoom(dungeonFloor, chunk) != null;
+        return dungeonFloor.getTakenChunks().contains(chunk);
     }
 
     public static boolean areAnyChunksAlreadyRooms(DungeonFloor dungeonFloor, List<DungeonChunk> chunks){
@@ -131,6 +131,7 @@ public class DungeonFloorUtil {
         List<DungeonChunk> chunks = RoomConfigurationUtil.getChunksForRoomConfiguration(rc, nwb);
         DungeonRoom room = new DungeonRoom(chunks, rc);
         dungeonFloor.addRoom(room);
+        dungeonFloor.addChunks(chunks);
         return room;
     }
 
