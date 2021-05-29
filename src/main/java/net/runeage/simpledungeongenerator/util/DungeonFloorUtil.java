@@ -131,7 +131,6 @@ public class DungeonFloorUtil {
         List<DungeonChunk> chunks = RoomConfigurationUtil.getChunksForRoomConfiguration(rc, nwb);
         DungeonRoom room = new DungeonRoom(chunks, rc);
         dungeonFloor.addRoom(room);
-        dungeonFloor.addChunks(chunks);
         return room;
     }
 

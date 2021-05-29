@@ -28,6 +28,7 @@ public class DungeonFloor {
         setDungeonFloorConfiguration(dungeonFloorConfiguration);
 
         rooms = new ArrayList<>();
+        takenChunks = new HashSet<>();
         roomsToPaste = new LinkedBlockingQueue<>();
     }
 
@@ -98,6 +99,7 @@ public class DungeonFloor {
     public void addRoom(DungeonRoom dungeonRoom){
         rooms.add(dungeonRoom);
         roomsToPaste.add(dungeonRoom);
+        addChunks(dungeonRoom.getChunks());
     }
 
     public void removeRoom(DungeonRoom dungeonRoom){

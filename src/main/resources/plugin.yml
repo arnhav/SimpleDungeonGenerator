@@ -3,6 +3,7 @@ version: ${project.version}
 main: net.runeage.simpledungeongenerator.SimpleDungeonGenerator
 api-version: 1.16
 authors: [ Tyrriel ]
+depend: [WorldEdit]
 commands:
   sdg:
     description: SimpleDungeonGenerator main command
