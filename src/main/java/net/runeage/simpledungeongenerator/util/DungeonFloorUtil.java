@@ -39,8 +39,8 @@ public class DungeonFloorUtil {
         List<RoomConfiguration> bossRoomConfigs = RoomConfigurationUtil.getBossRooms(dungeonFloor.getDungeonFloorConfiguration().getRooms());
         HashMap<DungeonChunk, Direction> endCaps = getEndCapsWithDirection(dungeonFloor);
         endCaps.putAll(getAllEndCaps(dungeonFloor));
+        if (doesDungeonHaveRoomType(dungeonFloor, RoomType.BOSS)) return;
         for (RoomConfiguration brc : bossRoomConfigs) {
-            if (doesDungeonHaveRoomType(dungeonFloor, RoomType.BOSS)) continue;
             for (DungeonChunk ec : endCaps.keySet()) {
                 Direction direction = endCaps.get(ec);
                 if (!brc.getOpenings().containsKey(direction)) continue;
