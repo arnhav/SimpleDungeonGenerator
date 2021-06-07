@@ -6,10 +6,12 @@ public class DungeonRoom {
 
     private RoomConfiguration roomConfiguration;
     private List<DungeonChunk> chunks;
+    private boolean pasted;
 
     public DungeonRoom(List<DungeonChunk> chunks, RoomConfiguration roomConfiguration){
         setChunks(chunks);
         setRoomConfiguration(roomConfiguration);
+        setPasted(false);
     }
 
     public void setRoomConfiguration(RoomConfiguration roomConfiguration) {
@@ -20,12 +22,20 @@ public class DungeonRoom {
         this.chunks = chunks;
     }
 
+    public void setPasted(boolean pasted) {
+        this.pasted = pasted;
+    }
+
     public RoomConfiguration getRoomConfiguration() {
         return roomConfiguration;
     }
 
     public List<DungeonChunk> getChunks() {
         return chunks;
+    }
+
+    public boolean isPasted() {
+        return pasted;
     }
 
     public DungeonChunk getPasteChunk(){

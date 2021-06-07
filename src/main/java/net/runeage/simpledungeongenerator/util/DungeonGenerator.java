@@ -99,11 +99,14 @@ public class DungeonGenerator {
                     String fileName = room.getRoomConfiguration().getFileName();
                     world.isChunkGenerated(chunk.getX(), chunk.getZ());
                     if (!world.isChunkLoaded(chunk.getX(), chunk.getZ())) {
-                        world.getChunkAtAsync(chunk.getX(), chunk.getZ()).thenAccept(c ->
-                                WEUtils.pasteFile(tilesetFolder, fileName, world, c.getX() * 16, ((level * 16)), c.getZ() * 16)
+                        world.getChunkAtAsync(chunk.getX(), chunk.getZ()).thenAccept(c -> {
+                                WEUtils.pasteFile(tilesetFolder, fileName, world, c.getX() * 16, ((level * 16)), c.getZ() * 16);
+                                room.setPasted(true);
+                            }
                         );
                     } else {
                         WEUtils.pasteFile(tilesetFolder, fileName, world, chunk.getX() * 16, ((level * 16)), chunk.getZ() * 16);
+                        room.setPasted(true);
                     }
 
                     FileManager.log(dungeonFloor.getRooms().indexOf(room) + "/" + (dungeonFloor.getRooms().size()-1) + " completed...");
