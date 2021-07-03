@@ -48,6 +48,8 @@ public class DungeonGenerator {
         DungeonFloorUtil.generateBossRoom(dungeonFloor);
         DungeonFloorUtil.generateEndCaps(dungeonFloor);
 
+        DungeonFloorUtil.updateRooms(dungeonFloor);
+
         dungeonFloor.setDungeonFloorConfiguration(dungeonFloorConfiguration);
         return dungeonFloor;
     }

@@ -17,31 +17,27 @@ import org.bukkit.World;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 
 public class WEUtils {
 
     public static void loadAndPasteSchem(File file, World world, int x, int y, int z){
         ClipboardFormat format = ClipboardFormats.findByFile(file);
+        if (format == null) return;
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
             Clipboard clipboard = reader.read();
             pasteSchem(world, clipboard, x, y, z);
-        } catch (IOException e) {
-
-        }
+        } catch (Exception e) {}
     }
 
     public static void pasteSchem(World world, Clipboard clipboard, int x, int y, int z){
-        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(BukkitAdapter.adapt(world), -1)) {
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
                     .to(BlockVector3.at(x, y, z))
                     .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
-        } catch (WorldEditException ignored) {
-
-        }
+        } catch (WorldEditException ignored) {}
     }
 
     public static void pasteFile(File folder, String fileName, World world, int x, int y, int z){

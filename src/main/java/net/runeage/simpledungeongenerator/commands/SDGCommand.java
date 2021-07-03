@@ -60,7 +60,7 @@ public class SDGCommand implements CommandExecutor {
                             return;
                         }
                         sender.sendActionBar(Component.text("Creating Dungeon Floor..."));
-                        Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 1);
+                        Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
                     }
                 }, 0);
             }

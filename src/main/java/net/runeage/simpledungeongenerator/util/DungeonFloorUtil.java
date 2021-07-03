@@ -11,6 +11,7 @@ import net.runeage.simpledungeongenerator.objects.generation.RoomConfigurationOp
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class DungeonFloorUtil {
 
@@ -29,6 +30,7 @@ public class DungeonFloorUtil {
 
             DungeonRoom room = setRoom(dungeonFloor, potentialConfigs, nextChunk, inverse);
             if (room == null) continue;
+            dungeonFloor.addRoom(room);
             count++;
             if (count > dungeonFloor.getDungeonFloorConfiguration().getPathLength()) return;
             generateNextRoom(dungeonFloor, room, count);
@@ -61,8 +63,53 @@ public class DungeonFloorUtil {
         for (DungeonChunk ec : endCaps.keySet()) {
             Direction direction = endCaps.get(ec);
             List<RoomConfiguration> ecConfigs = RoomConfigurationUtil.getEndCapRoomsInDirection(dungeonFloor.getDungeonFloorConfiguration().getRooms(), direction);
-            setRoom(dungeonFloor, ecConfigs, ec, direction);
+            DungeonRoom dr = setRoom(dungeonFloor, ecConfigs, ec, direction);
+            if (dr == null) continue;
+            dungeonFloor.addRoom(dr);
         }
+    }
+
+    public static void updateRooms(DungeonFloor dungeonFloor){
+        List<DungeonRoom> rooms = dungeonFloor.getRooms();
+        HashMap<Integer, List<Direction>> replacements = checkRooms(dungeonFloor);
+        for (int pos : replacements.keySet()){
+            List<Direction> list = replacements.get(pos);
+            DungeonRoom cr = rooms.get(pos);
+            cr.getChunks().forEach(dungeonFloor.getTakenChunks()::remove);
+            List<RoomConfiguration> prc = RoomConfigurationUtil.getRoomsWithOpenings(dungeonFloor, list);
+            Optional<Direction> od = cr.getRoomConfiguration().getOpenings().keySet().stream().findFirst();
+            if (!od.isPresent()) continue;
+            RoomConfigurationOpening rco = cr.getRoomConfiguration().getOpenings().get(od.get());
+            DungeonChunk odc = RoomConfigurationUtil.getDungeonChunkForOpening(cr.getPasteChunk(), rco);
+            DungeonRoom dr = setRoom(dungeonFloor, prc, odc, od.get());
+            if (dr == null) continue;
+            rooms.set(pos, dr);
+            dungeonFloor.addChunks(dr.getChunks());
+        }
+    }
+
+    public static HashMap<Integer, List<Direction>> checkRooms(DungeonFloor dungeonFloor){
+        List<DungeonRoom> rooms = dungeonFloor.getRooms();
+        HashMap<Integer, List<Direction>> replacements = new HashMap<>();
+        for (int i = 0; i < rooms.size(); i++){
+            DungeonRoom cr = rooms.get(i);
+            RoomConfiguration rc = cr.getRoomConfiguration();
+            HashMap<Direction, RoomConfigurationOpening> crcos = rc.getOpenings();
+            List<Direction> list = new ArrayList<>();
+            for (Direction direction : crcos.keySet()){
+                RoomConfigurationOpening rco = crcos.get(direction);
+                DungeonChunk odc = RoomConfigurationUtil.getDungeonChunkForOpening(cr.getPasteChunk(), rco);
+                DungeonChunk ndc = getNextChunkInDirection(odc, direction, 1);
+                DungeonRoom nr = getDungeonRoom(dungeonFloor, ndc);
+                if (nr == null) continue;
+                Direction inverse = DirectionUtil.getInverse(direction);
+                if (!nr.getRoomConfiguration().getOpenings().containsKey(inverse)) continue;
+                list.add(direction);
+            }
+            if (list.size() == crcos.size()) continue;
+            replacements.put(i, list);
+        }
+        return replacements;
     }
 
     public static DungeonChunk getNextChunkInDirection(DungeonChunk chunk, Direction direction, int chunks){
@@ -112,6 +159,14 @@ public class DungeonFloorUtil {
         return false;
     }
 
+    public static DungeonRoom getRoom(DungeonFloor dungeonFloor, DungeonChunk dungeonChunk){
+        for (DungeonRoom dr : dungeonFloor.getRooms()){
+            if (!dr.getChunks().contains(dungeonChunk)) continue;
+            return dr;
+        }
+        return null;
+    }
+
     public static DungeonRoom setRoom(DungeonFloor dungeonFloor, List<RoomConfiguration> potentialConfigs, DungeonChunk nextChunk, Direction direction){
         List<RoomConfiguration> shortList = new ArrayList<>();
         for (RoomConfiguration porc : potentialConfigs){
@@ -130,7 +185,6 @@ public class DungeonFloorUtil {
         DungeonChunk nwb = RoomConfigurationUtil.getNWBMostCorner(nextChunk, rco);
         List<DungeonChunk> chunks = RoomConfigurationUtil.getChunksForRoomConfiguration(rc, nwb);
         DungeonRoom room = new DungeonRoom(chunks, rc);
-        dungeonFloor.addRoom(room);
         return room;
     }
 
