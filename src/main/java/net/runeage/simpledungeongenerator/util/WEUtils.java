@@ -20,13 +20,13 @@ import java.io.FileInputStream;
 
 public class WEUtils {
 
-    public static void loadAndPasteSchem(File file, World world, int x, int y, int z){
+    public static Clipboard loadSchem(File file){
         ClipboardFormat format = ClipboardFormats.findByFile(file);
-        if (format == null) return;
+        if (format == null) return null;
         try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-            Clipboard clipboard = reader.read();
-            pasteSchem(world, clipboard, x, y, z);
+            return reader.read();
         } catch (Exception e) {}
+        return null;
     }
 
     public static void pasteSchem(World world, Clipboard clipboard, int x, int y, int z){
@@ -43,7 +43,8 @@ public class WEUtils {
     public static void pasteFile(File folder, String fileName, World world, int x, int y, int z){
         File file = new File(folder, fileName + ".schem");
         if (file.exists()){
-            loadAndPasteSchem(file, world, x, y, z);
+            Clipboard clipboard = loadSchem(file);
+            pasteSchem(world, clipboard, x, y, z);
         } else {
             SimpleDungeonGenerator.instance().getLogger().warning("File: '" + fileName + "' not found!");
         }

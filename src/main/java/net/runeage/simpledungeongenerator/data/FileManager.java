@@ -1,11 +1,20 @@
 package net.runeage.simpledungeongenerator.data;
 
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.registry.state.EnumProperty;
+import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
+import com.sk89q.worldedit.util.formatting.text.Component;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
 import net.runeage.simpledungeongenerator.objects.DungeonFloorConfiguration;
 import net.runeage.simpledungeongenerator.objects.enums.RoomType;
 import net.runeage.simpledungeongenerator.objects.generation.RoomConfiguration;
 import net.runeage.simpledungeongenerator.objects.generation.RoomConfigurationOpening;
+import net.runeage.simpledungeongenerator.util.WEUtils;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -122,6 +131,45 @@ public class FileManager {
         }
         dungeonFloorConfiguration.setRooms(rooms);
         return dungeonFloorConfiguration;
+    }
+
+    public static void createTilesetConfig(String tileSet){
+        File folder = new File(getTilesetsFolder(), tileSet);
+        File file = new File(folder, "config.yml");
+        if (file.exists()) return;
+        FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
+        File[] files = folder.listFiles();
+        if (files == null) return;
+        for (int i = 0; i < files.length; i++){
+            File f = files[i];
+            String path = f.getName().replace(".schem", "");
+            fc.set("Rooms."+path+".RoomType", RoomType.GENERIC.toString());
+            fc.set("Rooms."+path+".Limit", -1);
+
+            Clipboard clipboard = WEUtils.loadSchem(f);
+            if (clipboard == null) continue;
+            BlockVector3 bv3 = clipboard.getDimensions();
+            fc.set("Rooms."+path+".Size.x", bv3.getBlockX()/16+(bv3.getBlockX()%16==0?0:1));
+            fc.set("Rooms."+path+".Size.y", bv3.getBlockY()/16+(bv3.getBlockY()%16==0?0:1));
+            fc.set("Rooms."+path+".Size.z", bv3.getBlockZ()/16+(bv3.getBlockZ()%16==0?0:1));
+
+            for (BlockVector3 point : clipboard.getRegion()){
+                BaseBlock baseBlock = clipboard.getFullBlock(point);
+                if (!baseBlock.getBlockType().getId().equals("minecraft:jigsaw")) continue;
+                BlockType jigsaw = baseBlock.getBlockType();
+                BlockState blockState = clipboard.getBlock(point);
+                String o = blockState.getState(jigsaw.getProperty("orientation")).toString().split("_")[0];
+                if (o.equals("up") || o.equals("down")) continue;
+                int ox  = point.getX() - clipboard.getMinimumPoint().getX();
+                int oy  = point.getY() - clipboard.getMinimumPoint().getY();
+                int oz  = point.getZ() - clipboard.getMinimumPoint().getZ();
+                String direction = o.toUpperCase();
+                fc.set("Rooms."+path+".Openings."+direction+".x", ox/16);
+                fc.set("Rooms."+path+".Openings."+direction+".y", oy/16);
+                fc.set("Rooms."+path+".Openings."+direction+".z", oz/16);
+            }
+        }
+        save(fc, file);
     }
 
     public static void log(String message){

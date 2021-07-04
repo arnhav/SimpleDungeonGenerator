@@ -2,6 +2,7 @@ package net.runeage.simpledungeongenerator.commands;
 
 import net.kyori.adventure.text.Component;
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
+import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
 import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
 import net.runeage.simpledungeongenerator.util.DungeonGenerator;
@@ -63,6 +64,14 @@ public class SDGCommand implements CommandExecutor {
                         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
                     }
                 }, 0);
+            }
+
+            if (args[0].equalsIgnoreCase("gc")){
+                if (!DungeonFloorManager.isTileSetPresent(args[1])) return false;
+                Bukkit.getScheduler().runTaskAsynchronously(SimpleDungeonGenerator.instance(), ()->{
+                    FileManager.createTilesetConfig(args[1]);
+                    sender.sendMessage("config for tileset "+ args[1] + " has been generated.");
+                });
             }
         }
 
