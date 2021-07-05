@@ -1,6 +1,7 @@
 package net.runeage.simpledungeongenerator.util;
 
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
+import net.runeage.simpledungeongenerator.api.DungeonRoomPasteEvent;
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
 import net.runeage.simpledungeongenerator.objects.DungeonFloorConfiguration;
@@ -104,14 +105,18 @@ public class DungeonGenerator {
                         world.getChunkAtAsync(chunk.getX(), chunk.getZ()).thenAccept(c -> {
                                 WEUtils.pasteFile(tilesetFolder, fileName, world, c.getX() * 16, ((level * 16)), c.getZ() * 16);
                                 room.setPasted(true);
+                                DungeonRoomPasteEvent drpe = new DungeonRoomPasteEvent(world, dungeonFloor, room);
+                                Bukkit.getServer().getPluginManager().callEvent(drpe);
                             }
                         );
                     } else {
                         WEUtils.pasteFile(tilesetFolder, fileName, world, chunk.getX() * 16, ((level * 16)), chunk.getZ() * 16);
                         room.setPasted(true);
+                        DungeonRoomPasteEvent drpe = new DungeonRoomPasteEvent(world, dungeonFloor, room);
+                        Bukkit.getServer().getPluginManager().callEvent(drpe);
                     }
 
-                    FileManager.log(dungeonFloor.getRooms().indexOf(room) + "/" + (dungeonFloor.getRooms().size()-1) + " completed...");
+                    FileManager.log((dungeonFloor.getRooms().indexOf(room)+1) + "/" + dungeonFloor.getRooms().size() + " completed...");
                 }
 
                 Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
