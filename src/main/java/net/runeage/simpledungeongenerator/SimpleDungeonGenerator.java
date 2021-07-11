@@ -3,6 +3,7 @@ package net.runeage.simpledungeongenerator;
 import net.runeage.simpledungeongenerator.api.SimpleDungeonGeneratorService;
 import net.runeage.simpledungeongenerator.commands.SDGCommand;
 import net.runeage.simpledungeongenerator.data.FileManager;
+import net.runeage.simpledungeongenerator.listeners.DungeonFloorListener;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
 import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
 import net.runeage.simpledungeongenerator.util.DungeonGenerator;
@@ -15,6 +16,8 @@ public final class SimpleDungeonGenerator extends JavaPlugin implements SimpleDu
     public void onEnable() {
         // Plugin startup logic
         new FileManager(this);
+
+        getServer().getPluginManager().registerEvents(new DungeonFloorListener(), this);
 
         getCommand("sdg").setExecutor(new SDGCommand());
     }
