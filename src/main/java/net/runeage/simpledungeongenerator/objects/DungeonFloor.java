@@ -6,7 +6,6 @@ import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class DungeonFloor {
 
@@ -17,6 +16,7 @@ public class DungeonFloor {
 
     private List<DungeonRoom> rooms;
     private HashSet<DungeonChunk> takenChunks;
+    private HashSet<DungeonChunk> fillers;
 
     private boolean ready = false;
 
@@ -28,6 +28,7 @@ public class DungeonFloor {
 
         rooms = new ArrayList<>();
         takenChunks = new HashSet<>();
+        fillers = new HashSet<>();
     }
 
     public void setName(String name) {
@@ -44,6 +45,10 @@ public class DungeonFloor {
 
     public void setTakenChunks(HashSet<DungeonChunk> takenChunks) {
         this.takenChunks = takenChunks;
+    }
+
+    public void setFillers(HashSet<DungeonChunk> fillers) {
+        this.fillers = fillers;
     }
 
     public void setWorld(String world) {
@@ -72,6 +77,10 @@ public class DungeonFloor {
 
     public HashSet<DungeonChunk> getTakenChunks() {
         return takenChunks;
+    }
+
+    public HashSet<DungeonChunk> getFillers() {
+        return fillers;
     }
 
     public String getWorld() {

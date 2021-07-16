@@ -51,6 +51,8 @@ public class DungeonGenerator {
 
         DungeonFloorUtil.updateRooms(dungeonFloor);
 
+        DungeonFloorUtil.collectSurroundingEmptyChunks(dungeonFloor);
+
         dungeonFloor.setDungeonFloorConfiguration(dungeonFloorConfiguration);
         return dungeonFloor;
     }
@@ -70,6 +72,46 @@ public class DungeonGenerator {
         world.setGameRule(GameRule.MOB_GRIEFING, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         System.out.println("World created...");
+        return true;
+    }
+
+    public static boolean placeFillers(DungeonFloor dungeonFloor){
+        DungeonFloorConfiguration dfc = dungeonFloor.getDungeonFloorConfiguration();
+        if (dfc == null || dfc.getFiller().equals("")) return true;
+        File tilesetFolder = new File(FileManager.getTilesetsFolder(), dungeonFloor.getTileset());
+        World world = Bukkit.getWorld(dungeonFloor.getWorld());
+        if (world == null){
+            SimpleDungeonGenerator.instance().getLogger().severe("World not created!");
+            return false;
+        }
+        System.out.println("Pasting filler...");
+        LinkedBlockingQueue<DungeonChunk> toPaste = new LinkedBlockingQueue<>(dungeonFloor.getFillers());
+        Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
+            @Override
+            public void run() {
+                if (toPaste.isEmpty()) {
+                    System.out.println("Done pasting filler...");
+                    return;
+                }
+
+                int count = 0;
+                while (count < 15){
+                    count++;
+                    DungeonChunk chunk = toPaste.poll();
+                    if (chunk == null) continue;
+                    int level = dfc.getFillerLevel();
+                    String fileName = dfc.getFiller();
+                    world.isChunkGenerated(chunk.getX(), chunk.getZ());
+                    if (!world.isChunkLoaded(chunk.getX(), chunk.getZ())) {
+                        world.getChunkAtAsync(chunk.getX(), chunk.getZ()).thenAccept(c -> WEUtils.pasteFile(tilesetFolder, fileName, world, c.getX() * 16, ((level * 16)), c.getZ() * 16));
+                    } else {
+                        WEUtils.pasteFile(tilesetFolder, fileName, world, chunk.getX() * 16, ((level * 16)), chunk.getZ() * 16);
+                    }
+                }
+
+                Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
+            }
+        }, 0);
         return true;
     }
 

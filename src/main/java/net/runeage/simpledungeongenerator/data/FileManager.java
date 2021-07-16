@@ -93,6 +93,16 @@ public class FileManager {
             dungeonFloorConfiguration.setPathLength(20);
         }
 
+        if (fileConfiguration.isConfigurationSection("Filler")){
+            String filler = fileConfiguration.getString("Filler.name");
+            int fillerLevel = fileConfiguration.getInt("Filler.level");
+            dungeonFloorConfiguration.setFiller(filler);
+            dungeonFloorConfiguration.setFillerLevel(fillerLevel);
+        } else {
+            dungeonFloorConfiguration.setFiller("");
+            dungeonFloorConfiguration.setFillerLevel(-1);
+        }
+
         ConfigurationSection roomSection = fileConfiguration.getConfigurationSection("Rooms");
         List<RoomConfiguration> rooms = new ArrayList<>();
         if (roomSection != null) {
@@ -138,6 +148,9 @@ public class FileManager {
         File file = new File(folder, "config.yml");
         if (file.exists()) return;
         FileConfiguration fc = YamlConfiguration.loadConfiguration(file);
+        fc.set("PathLength", 20);
+        fc.set("Filler.name", "");
+        fc.set("Filler.level", 0);
         File[] files = folder.listFiles();
         if (files == null) return;
         for (int i = 0; i < files.length; i++){

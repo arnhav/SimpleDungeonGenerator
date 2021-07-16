@@ -8,10 +8,7 @@ import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
 import net.runeage.simpledungeongenerator.objects.generation.RoomConfiguration;
 import net.runeage.simpledungeongenerator.objects.generation.RoomConfigurationOpening;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class DungeonFloorUtil {
 
@@ -110,6 +107,24 @@ public class DungeonFloorUtil {
             replacements.put(i, list);
         }
         return replacements;
+    }
+
+    public static void collectSurroundingEmptyChunks(DungeonFloor dungeonFloor){
+        List<DungeonRoom> rooms = dungeonFloor.getRooms();
+        HashSet<DungeonChunk> seen = new HashSet<>();
+        for (DungeonRoom dr: rooms){
+            List<DungeonChunk> chunks = dr.getChunks();
+            for (DungeonChunk dc : chunks){
+                List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
+                for (Direction direction : directions){
+                    DungeonChunk ndc = getNextChunkInDirection(dc, direction, 1);
+                    if (isAlreadyRoom(dungeonFloor, ndc)) continue;
+                    if (seen.contains(ndc)) continue;
+                    seen.add(ndc);
+                }
+            }
+        }
+        dungeonFloor.setFillers(seen);
     }
 
     public static DungeonChunk getNextChunkInDirection(DungeonChunk chunk, Direction direction, int chunks){
