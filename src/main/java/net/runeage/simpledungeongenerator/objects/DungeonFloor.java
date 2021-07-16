@@ -17,7 +17,6 @@ public class DungeonFloor {
 
     private List<DungeonRoom> rooms;
     private HashSet<DungeonChunk> takenChunks;
-    private LinkedBlockingQueue<DungeonRoom> roomsToPaste;
 
     private boolean ready = false;
 
@@ -29,7 +28,6 @@ public class DungeonFloor {
 
         rooms = new ArrayList<>();
         takenChunks = new HashSet<>();
-        roomsToPaste = new LinkedBlockingQueue<>();
     }
 
     public void setName(String name) {
@@ -46,10 +44,6 @@ public class DungeonFloor {
 
     public void setTakenChunks(HashSet<DungeonChunk> takenChunks) {
         this.takenChunks = takenChunks;
-    }
-
-    public void setRoomsToPaste(LinkedBlockingQueue<DungeonRoom> roomsToPaste) {
-        this.roomsToPaste = roomsToPaste;
     }
 
     public void setWorld(String world) {
@@ -80,10 +74,6 @@ public class DungeonFloor {
         return takenChunks;
     }
 
-    public LinkedBlockingQueue<DungeonRoom> getRoomsToPaste() {
-        return roomsToPaste;
-    }
-
     public String getWorld() {
         return world;
     }
@@ -98,13 +88,11 @@ public class DungeonFloor {
 
     public void addRoom(DungeonRoom dungeonRoom){
         rooms.add(dungeonRoom);
-        roomsToPaste.add(dungeonRoom);
         addChunks(dungeonRoom.getChunks());
     }
 
     public void removeRoom(DungeonRoom dungeonRoom){
         rooms.remove(dungeonRoom);
-        roomsToPaste.remove(dungeonRoom);
     }
 
     public void addChunks(List<DungeonChunk> list){
@@ -119,7 +107,6 @@ public class DungeonFloor {
                 ", world='" + world + '\'' +
                 ", dungeonFloorConfiguration=" + dungeonFloorConfiguration +
                 ", rooms=" + rooms +
-                ", roomsToPaste=" + roomsToPaste +
                 ", ready=" + ready +
                 '}';
     }

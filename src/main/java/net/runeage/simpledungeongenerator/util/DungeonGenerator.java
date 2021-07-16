@@ -81,7 +81,7 @@ public class DungeonGenerator {
             return false;
         }
         System.out.println("Pasting rooms...");
-        LinkedBlockingQueue<DungeonRoom> roomsToPaste = dungeonFloor.getRoomsToPaste();
+        LinkedBlockingQueue<DungeonRoom> roomsToPaste = new LinkedBlockingQueue<>(dungeonFloor.getRooms());
         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
             @Override
             public void run() {
