@@ -55,12 +55,11 @@ public class SDGCommand implements CommandExecutor {
                 Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
                     @Override
                     public void run() {
-                        if (df.isReady()){
+                        if (df.getRooms().get(0).isPasted()){
                             ((Player) sender).setGameMode(GameMode.SPECTATOR);
                             ((Player) sender).teleport(new Location(w, 0, 1, 0));
                             return;
                         }
-                        sender.sendActionBar(Component.text("Creating Dungeon Floor..."));
                         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
                     }
                 }, 0);
