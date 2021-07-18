@@ -18,7 +18,6 @@ public class DungeonFloorManager {
         if (!DungeonGenerator.createWorld(worldName)) return false;
         df.setName(worldName);
         df.setWorld(worldName);
-        if (!DungeonGenerator.placeFillers(df)) return false;
         if (!DungeonGenerator.placeRooms(df)) return false;
         dungeonFloors.add(df);
         return true;

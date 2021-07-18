@@ -34,7 +34,7 @@ public class SDGCommand implements CommandExecutor {
         if (args.length == 2){
             if (args[0].equalsIgnoreCase("create")){
                 if (!DungeonFloorManager.isTileSetPresent(args[1])) return false;
-                DungeonFloor df = DungeonGenerator.generateDungeon(args[1], "");
+                DungeonFloor df = DungeonGenerator.generateDungeon(args[1], "SDG_"+DungeonFloorManager.dungeonFloors.size());
                 if (df == null) return false;
                 DungeonFloorManager.createDungeonFloorWorld(df);
             }
@@ -55,11 +55,12 @@ public class SDGCommand implements CommandExecutor {
                 Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
                     @Override
                     public void run() {
-                        if (df.getRooms().get(0).isPasted()){
+                        if (df.isReady()){
                             ((Player) sender).setGameMode(GameMode.SPECTATOR);
                             ((Player) sender).teleport(new Location(w, 0, 1, 0));
                             return;
                         }
+                        sender.sendActionBar(Component.text("Generating Dungeon Floor..."));
                         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
                     }
                 }, 0);

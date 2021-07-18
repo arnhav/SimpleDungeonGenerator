@@ -26,7 +26,7 @@ public class DungeonFloorListener implements Listener {
                 if (!(bd instanceof Jigsaw)) continue;
                 String orientation = ((Jigsaw) bd).getOrientation().toString().split("_")[0];
                 if (orientation.equals("UP") || orientation.equals("DOWN")) continue;
-                bs.setType(Material.AIR);
+                bs.getBlock().setType(Material.AIR);
             }
         }
     }

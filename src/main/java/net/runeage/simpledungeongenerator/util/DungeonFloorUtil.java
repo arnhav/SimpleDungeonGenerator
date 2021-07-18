@@ -73,12 +73,12 @@ public class DungeonFloorUtil {
             List<Direction> list = replacements.get(pos);
             DungeonRoom cr = rooms.get(pos);
             cr.getChunks().forEach(dungeonFloor.getTakenChunks()::remove);
-            List<RoomConfiguration> prc = RoomConfigurationUtil.getRoomsWithOpenings(dungeonFloor, list);
+            List<RoomConfiguration> prc = RoomConfigurationUtil.getRoomsWithOpenings(dungeonFloor, cr.getRoomConfiguration(), list);
             Optional<Direction> od = cr.getRoomConfiguration().getOpenings().keySet().stream().findFirst();
             if (!od.isPresent()) continue;
             RoomConfigurationOpening rco = cr.getRoomConfiguration().getOpenings().get(od.get());
             DungeonChunk odc = RoomConfigurationUtil.getDungeonChunkForOpening(cr.getPasteChunk(), rco);
-            DungeonRoom dr = setRoom(dungeonFloor, prc, odc, od.get());
+            DungeonRoom dr = setRoom(dungeonFloor, prc, odc, DirectionUtil.getInverse(od.get()));
             if (dr == null) continue;
             rooms.set(pos, dr);
             dungeonFloor.addChunks(dr.getChunks());
@@ -110,14 +110,13 @@ public class DungeonFloorUtil {
     }
 
     public static void collectSurroundingEmptyChunks(DungeonFloor dungeonFloor){
-        List<DungeonRoom> rooms = dungeonFloor.getRooms();
+        HashSet<DungeonChunk> chunks = dungeonFloor.getTakenChunks();
         HashSet<DungeonChunk> seen = new HashSet<>();
-        for (DungeonRoom dr: rooms){
-            List<DungeonChunk> chunks = dr.getChunks();
-            for (DungeonChunk dc : chunks){
-                List<Direction> directions = Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST);
-                for (Direction direction : directions){
-                    DungeonChunk ndc = getNextChunkInDirection(dc, direction, 1);
+        int level = dungeonFloor.getDungeonFloorConfiguration().getFillerLevel();
+        for (DungeonChunk dc : chunks){
+            for (int x = -1; x <= 1; x++){
+                for (int z = -1; z <= 1; z++) {
+                    DungeonChunk ndc = new DungeonChunk(dc.getWorld(), dc.getX()+x, dc.getZ()+z, level);
                     if (isAlreadyRoom(dungeonFloor, ndc)) continue;
                     if (seen.contains(ndc)) continue;
                     seen.add(ndc);

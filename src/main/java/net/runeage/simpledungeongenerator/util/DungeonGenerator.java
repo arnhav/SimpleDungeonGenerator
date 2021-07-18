@@ -45,12 +45,15 @@ public class DungeonGenerator {
         DungeonRoom start = new DungeonRoom(chunks, roomConfig);
         dungeonFloor.addRoom(start);
 
+        System.out.println("Generating Rooms...");
         DungeonFloorUtil.generateNextRoom(dungeonFloor, start, 0);
+        System.out.println("Generating Boss Room...");
         DungeonFloorUtil.generateBossRoom(dungeonFloor);
+        System.out.println("Generating End Caps...");
         DungeonFloorUtil.generateEndCaps(dungeonFloor);
-
+        System.out.println("Checking Dungeon Integrity...");
         DungeonFloorUtil.updateRooms(dungeonFloor);
-
+        System.out.println("Collecting Empty Filler Chunks...");
         DungeonFloorUtil.collectSurroundingEmptyChunks(dungeonFloor);
 
         dungeonFloor.setDungeonFloorConfiguration(dungeonFloorConfiguration);
@@ -67,10 +70,12 @@ public class DungeonGenerator {
             SimpleDungeonGenerator.instance().getLogger().severe("World Creation Error!");
             return false;
         }
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_FIRE_TICK, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);
         world.setGameRule(GameRule.MOB_GRIEFING, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+        world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
         System.out.println("World created...");
         return true;
     }
@@ -91,11 +96,12 @@ public class DungeonGenerator {
             public void run() {
                 if (toPaste.isEmpty()) {
                     System.out.println("Done pasting filler...");
+                    dungeonFloor.setReady(true);
                     return;
                 }
 
                 int count = 0;
-                while (count < 15){
+                while (count < 5){
                     count++;
                     DungeonChunk chunk = toPaste.poll();
                     if (chunk == null) continue;
@@ -129,12 +135,12 @@ public class DungeonGenerator {
             public void run() {
                 if (roomsToPaste.isEmpty()) {
                     System.out.println("Done pasting rooms...");
-                    dungeonFloor.setReady(true);
+                    placeFillers(dungeonFloor);
                     return;
                 }
 
                 int count = 0;
-                while (count < 5){
+                while (count < 3){
                     count++;
                     DungeonRoom room = roomsToPaste.poll();
                     if (room == null) continue;

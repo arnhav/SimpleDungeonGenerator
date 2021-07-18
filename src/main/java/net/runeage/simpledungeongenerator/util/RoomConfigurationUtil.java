@@ -56,18 +56,22 @@ public class RoomConfigurationUtil {
         return list;
     }
 
-    public static List<RoomConfiguration> getRoomsWithOpenings(DungeonFloor df, List<Direction> directions){
+    public static List<RoomConfiguration> getRoomsWithOpenings(DungeonFloor df, RoomConfiguration prc, List<Direction> directions){
         List<RoomConfiguration> rooms = df.getDungeonFloorConfiguration().getRooms();
         List<RoomConfiguration> list = new ArrayList<>();
         for (RoomConfiguration rc : rooms){
             if (rc.getLimit() != -1 && getNumRoomConfigsInDungeon(df, rc) >= rc.getLimit()) continue;
             if (!rc.getOpenings().keySet().containsAll(directions)) continue;
+            if (rc.getOpenings().size()!=directions.size()) continue;
+            if (prc.getSizeX()!=rc.getSizeX()||prc.getSizeY()!=rc.getSizeY()||prc.getSizeZ()!=rc.getSizeZ()) continue;
             list.add(rc);
         }
         return list;
     }
 
     public static DungeonChunk getNWBMostCorner(DungeonChunk pc, RoomConfigurationOpening rco){
+        System.out.println(pc);
+        System.out.println(rco);
         return new DungeonChunk(pc.getWorld(), pc.getX()-rco.getX(), pc.getZ()-rco.getZ(), pc.getLevel()-rco.getY());
     }
 

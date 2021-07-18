@@ -12,6 +12,7 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.util.SideEffect;
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
 import org.bukkit.World;
 
@@ -34,10 +35,11 @@ public class WEUtils {
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
                     .to(BlockVector3.at(x, y, z))
-                    .ignoreAirBlocks(false)
                     .build();
             Operations.complete(operation);
-        } catch (WorldEditException ignored) {}
+        } catch (WorldEditException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void pasteFile(File folder, String fileName, World world, int x, int y, int z){
