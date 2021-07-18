@@ -82,7 +82,10 @@ public class DungeonGenerator {
 
     public static boolean placeFillers(DungeonFloor dungeonFloor){
         DungeonFloorConfiguration dfc = dungeonFloor.getDungeonFloorConfiguration();
-        if (dfc == null || dfc.getFiller().equals("")) return true;
+        if (dfc == null || dfc.getFiller().equals("")) {
+            dungeonFloor.setReady(true);
+            return true;
+        }
         File tilesetFolder = new File(FileManager.getTilesetsFolder(), dungeonFloor.getTileset());
         World world = Bukkit.getWorld(dungeonFloor.getWorld());
         if (world == null){
