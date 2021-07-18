@@ -24,10 +24,17 @@ public class SDGCommand implements CommandExecutor {
         if (!(sender instanceof Player)) return true;
 
         if (args.length == 1){
-            if (!args[0].equalsIgnoreCase("list")) return true;
-            sender.sendMessage("Dungeons:");
-            for (DungeonFloor df : DungeonFloorManager.dungeonFloors){
-                sender.sendMessage(Component.text("- "+df.getName()+" | "+df.getTileset()));
+            if (args[0].equalsIgnoreCase("list")) {
+                sender.sendMessage("Dungeons:");
+                for (DungeonFloor df : DungeonFloorManager.dungeonFloors) {
+                    sender.sendMessage(Component.text("- " + df.getName() + " | " + df.getTileset()));
+                }
+            }
+            if (args[0].equalsIgnoreCase("leave")) {
+                Location loc = DungeonFloorManager.playerLocations.get(sender);
+                if (loc == null) return true;
+                ((Player) sender).teleport(loc);
+                DungeonFloorManager.playerLocations.remove(sender);
             }
         }
 
@@ -56,6 +63,7 @@ public class SDGCommand implements CommandExecutor {
                     @Override
                     public void run() {
                         if (df.isReady()){
+                            DungeonFloorManager.playerLocations.put((Player) sender, ((Player) sender).getLocation());
                             ((Player) sender).setGameMode(GameMode.SPECTATOR);
                             ((Player) sender).teleport(new Location(w, 0, 1, 0));
                             return;

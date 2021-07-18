@@ -32,6 +32,8 @@ public class WEUtils {
 
     public static void pasteSchem(World world, Clipboard clipboard, int x, int y, int z){
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+            //editSession.getSideEffectApplier().with(SideEffect.UPDATE, SideEffect.State.OFF);
+            //editSession.getSideEffectApplier().with(SideEffect.NEIGHBORS, SideEffect.State.OFF);
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
                     .to(BlockVector3.at(x, y, z))

@@ -140,7 +140,7 @@ public class DungeonGenerator {
                 }
 
                 int count = 0;
-                while (count < 3){
+                while (count < 2){
                     count++;
                     DungeonRoom room = roomsToPaste.poll();
                     if (room == null) continue;

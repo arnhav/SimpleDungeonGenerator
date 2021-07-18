@@ -3,14 +3,18 @@ package net.runeage.simpledungeongenerator.util;
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class DungeonFloorManager {
 
     public static HashSet<DungeonFloor> dungeonFloors = new HashSet<>();
+    public static HashMap<Player, Location> playerLocations = new HashMap<>();
 
     public static boolean createDungeonFloorWorld(DungeonFloor df){
         if (df == null) return false;

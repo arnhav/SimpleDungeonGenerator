@@ -78,7 +78,7 @@ public class DungeonFloorUtil {
             if (!od.isPresent()) continue;
             RoomConfigurationOpening rco = cr.getRoomConfiguration().getOpenings().get(od.get());
             DungeonChunk odc = RoomConfigurationUtil.getDungeonChunkForOpening(cr.getPasteChunk(), rco);
-            DungeonRoom dr = setRoom(dungeonFloor, prc, odc, DirectionUtil.getInverse(od.get()));
+            DungeonRoom dr = setRoom(dungeonFloor, prc, odc, od.get());
             if (dr == null) continue;
             rooms.set(pos, dr);
             dungeonFloor.addChunks(dr.getChunks());
@@ -184,7 +184,9 @@ public class DungeonFloorUtil {
     public static DungeonRoom setRoom(DungeonFloor dungeonFloor, List<RoomConfiguration> potentialConfigs, DungeonChunk nextChunk, Direction direction){
         List<RoomConfiguration> shortList = new ArrayList<>();
         for (RoomConfiguration porc : potentialConfigs){
-            DungeonChunk ponwb = RoomConfigurationUtil.getNWBMostCorner(nextChunk, porc.getOpenings().get(direction));
+            RoomConfigurationOpening porco = porc.getOpenings().get(direction);
+            if (porco == null) continue;
+            DungeonChunk ponwb = RoomConfigurationUtil.getNWBMostCorner(nextChunk, porco);
             if (ponwb.getLevel() < 0) continue;
             List<DungeonChunk> pochunks = RoomConfigurationUtil.getChunksForRoomConfiguration(porc, ponwb);
             if (areAnyChunksAlreadyRooms(dungeonFloor, pochunks)) continue;
@@ -198,8 +200,7 @@ public class DungeonFloorUtil {
         RoomConfigurationOpening rco = rcos.get(direction);
         DungeonChunk nwb = RoomConfigurationUtil.getNWBMostCorner(nextChunk, rco);
         List<DungeonChunk> chunks = RoomConfigurationUtil.getChunksForRoomConfiguration(rc, nwb);
-        DungeonRoom room = new DungeonRoom(chunks, rc);
-        return room;
+        return new DungeonRoom(chunks, rc);
     }
 
     public static HashMap<DungeonChunk, Direction> getEndCapsWithDirection(DungeonFloor dungeonFloor){

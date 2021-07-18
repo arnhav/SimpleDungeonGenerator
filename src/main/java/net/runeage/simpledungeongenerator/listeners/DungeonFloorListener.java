@@ -3,14 +3,18 @@ package net.runeage.simpledungeongenerator.listeners;
 import net.runeage.simpledungeongenerator.api.DungeonRoomPasteEvent;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonChunk;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
+import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Jigsaw;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class DungeonFloorListener implements Listener {
 
@@ -29,6 +33,14 @@ public class DungeonFloorListener implements Listener {
                 bs.getBlock().setType(Material.AIR);
             }
         }
+    }
+
+    @EventHandler
+    public void onQuit(PlayerQuitEvent event){
+        Player p = event.getPlayer();
+        Location loc = DungeonFloorManager.playerLocations.get(p);
+        if (loc == null) return;
+        p.teleport(loc);
     }
 
 }
