@@ -3,10 +3,10 @@ A procedural structure generator using WE schematics
 
 ## Maven Info
 ```
-		<repository>
-		    <id>jitpack.io</id>
-		    <url>https://jitpack.io</url>
-		</repository>
+	<repository>
+	    <id>jitpack.io</id>
+	    <url>https://jitpack.io</url>
+	</repository>
   
   	<dependency>
 	    <groupId>com.github.arnhav11</groupId>
