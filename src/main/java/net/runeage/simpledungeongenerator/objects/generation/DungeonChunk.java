@@ -7,7 +7,7 @@ public class DungeonChunk {
     private String world;
     private int x, z, level;
 
-    public DungeonChunk(String world, int x, int z, int level){
+    public DungeonChunk(String world, int x, int z, int level) {
         setWorld(world);
         setX(x);
         setZ(z);

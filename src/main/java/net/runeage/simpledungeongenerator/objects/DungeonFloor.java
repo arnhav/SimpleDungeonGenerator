@@ -20,7 +20,7 @@ public class DungeonFloor {
 
     private boolean ready = false;
 
-    public DungeonFloor(String name, String tileset, String world, DungeonFloorConfiguration dungeonFloorConfiguration){
+    public DungeonFloor(String name, String tileset, String world, DungeonFloorConfiguration dungeonFloorConfiguration) {
         setName(name);
         setTileset(tileset);
         setWorld(world);
@@ -95,16 +95,16 @@ public class DungeonFloor {
         return ready;
     }
 
-    public void addRoom(DungeonRoom dungeonRoom){
+    public void addRoom(DungeonRoom dungeonRoom) {
         rooms.add(dungeonRoom);
         addChunks(dungeonRoom.getChunks());
     }
 
-    public void removeRoom(DungeonRoom dungeonRoom){
+    public void removeRoom(DungeonRoom dungeonRoom) {
         rooms.remove(dungeonRoom);
     }
 
-    public void addChunks(List<DungeonChunk> list){
+    public void addChunks(List<DungeonChunk> list) {
         takenChunks.addAll(list);
     }
 

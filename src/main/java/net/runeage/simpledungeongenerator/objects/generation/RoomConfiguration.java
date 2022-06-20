@@ -16,7 +16,7 @@ public class RoomConfiguration {
     private int sizeX, sizeY, sizeZ;
     private HashMap<Direction, RoomConfigurationOpening> openings;
 
-    public RoomConfiguration(String fileName, RoomType roomType, int limit, List<String> incompat, int sizeX, int sizeY, int sizeZ, HashMap<Direction, RoomConfigurationOpening> openings){
+    public RoomConfiguration(String fileName, RoomType roomType, int limit, List<String> incompat, int sizeX, int sizeY, int sizeZ, HashMap<Direction, RoomConfigurationOpening> openings) {
         setFileName(fileName);
         setRoomType(roomType);
         setLimit(limit);
@@ -76,15 +76,15 @@ public class RoomConfiguration {
     }
 
     public int getSizeX() {
-        return sizeX-1;
+        return sizeX - 1;
     }
 
     public int getSizeY() {
-        return sizeY-1;
+        return sizeY - 1;
     }
 
     public int getSizeZ() {
-        return sizeZ-1;
+        return sizeZ - 1;
     }
 
     public HashMap<Direction, RoomConfigurationOpening> getOpenings() {

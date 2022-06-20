@@ -4,8 +4,8 @@ import net.kyori.adventure.text.Component;
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
-import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
-import net.runeage.simpledungeongenerator.util.DungeonGenerator;
+import net.runeage.simpledungeongenerator.DungeonFloorManager;
+import net.runeage.simpledungeongenerator.DungeonGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -23,7 +23,22 @@ public class SDGCommand implements CommandExecutor {
 
         if (!(sender instanceof Player)) return true;
 
-        if (args.length == 1){
+        if (args.length == 0) {
+            ((Player) sender).chat("/sdg help");
+        }
+
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("help")) {
+                sender.sendMessage(
+                        "-----SDG HELP-----",
+                        "/sdg list",
+                        "/sdg leave",
+                        "/sdg create <tileset>",
+                        "/sdg delete <world>",
+                        "/sdg enter <world>",
+                        "/sdg gc <tileset> - FOR GENERATING THE CONFIG"
+                );
+            }
             if (args[0].equalsIgnoreCase("list")) {
                 sender.sendMessage("Dungeons:");
                 for (DungeonFloor df : DungeonFloorManager.dungeonFloors) {
@@ -38,28 +53,34 @@ public class SDGCommand implements CommandExecutor {
             }
         }
 
-        if (args.length == 2){
-            if (args[0].equalsIgnoreCase("create")){
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("create")) {
                 if (!DungeonFloorManager.isTileSetPresent(args[1])) return false;
-                DungeonFloor df = DungeonGenerator.generateDungeon(args[1], "SDG_"+DungeonFloorManager.dungeonFloors.size());
-                if (df == null) return false;
-                DungeonFloorManager.createDungeonFloorWorld(df);
+                DungeonGenerator.generateDungeon(args[1], "SDG_" + DungeonFloorManager.dungeonFloors.size())
+                        .thenAccept(df -> {
+                            sender.sendMessage("Started creating dungeon...");
+                            DungeonFloorManager.createDungeonFloorWorld(df);
+                        });
             }
 
-            if (args[0].equalsIgnoreCase("delete")){
+            if (args[0].equalsIgnoreCase("delete")) {
                 World w = Bukkit.getWorld(args[1]);
                 if (w == null) return false;
                 DungeonFloor df = DungeonFloorManager.getDungeonFloor(w);
                 if (df == null) return false;
                 DungeonFloorManager.deleteDungeonFloorWorld(df);
+                sender.sendMessage("Deleted dungeon world");
             }
 
-            if (args[0].equalsIgnoreCase("enter")){
+            if (args[0].equalsIgnoreCase("enter")) {
                 World w = Bukkit.getWorld(args[1]);
                 if (w == null) return false;
                 DungeonFloor df = DungeonFloorManager.getDungeonFloor(w);
                 if (df == null) return false;
-                Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
+                DungeonFloorManager.playerLocations.put((Player) sender, ((Player) sender).getLocation());
+                ((Player) sender).setGameMode(GameMode.SPECTATOR);
+                ((Player) sender).teleport(new Location(w, 0, 1, 0));
+                /*Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
                     @Override
                     public void run() {
                         if (df.isReady()){
@@ -71,14 +92,14 @@ public class SDGCommand implements CommandExecutor {
                         sender.sendActionBar(Component.text("Generating Dungeon Floor..."));
                         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), this, 20);
                     }
-                }, 0);
+                }, 0);*/
             }
 
-            if (args[0].equalsIgnoreCase("gc")){
+            if (args[0].equalsIgnoreCase("gc")) {
                 if (!DungeonFloorManager.isTileSetPresent(args[1])) return false;
-                Bukkit.getScheduler().runTaskAsynchronously(SimpleDungeonGenerator.instance(), ()->{
+                Bukkit.getScheduler().runTaskAsynchronously(SimpleDungeonGenerator.instance(), () -> {
                     FileManager.createTilesetConfig(args[1]);
-                    sender.sendMessage("config for tileset "+ args[1] + " has been generated.");
+                    sender.sendMessage("config for tileset " + args[1] + " has been generated.");
                 });
             }
         }

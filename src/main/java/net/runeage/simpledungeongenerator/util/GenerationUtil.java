@@ -10,7 +10,7 @@ import net.runeage.simpledungeongenerator.objects.generation.RoomConfigurationOp
 
 import java.util.*;
 
-public class DungeonFloorUtil {
+public class GenerationUtil {
 
     public static void generateNextRoom(DungeonFloor dungeonFloor, DungeonRoom pr, int count) {
         RoomConfiguration prc = pr.getRoomConfiguration();

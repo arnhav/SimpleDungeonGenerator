@@ -2,10 +2,7 @@ package net.runeage.simpledungeongenerator.data;
 
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.registry.state.EnumProperty;
-import com.sk89q.worldedit.registry.state.Property;
 import com.sk89q.worldedit.util.Direction;
-import com.sk89q.worldedit.util.formatting.text.Component;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockType;
@@ -34,12 +31,12 @@ public class FileManager {
 
     private static File log;
 
-    public FileManager(JavaPlugin plugin){
+    public FileManager(JavaPlugin plugin) {
         createConfig(plugin);
         createLogFile(plugin);
     }
 
-    public void createConfig(JavaPlugin plugin){
+    public void createConfig(JavaPlugin plugin) {
         try {
             if (!plugin.getDataFolder().exists()) {
                 plugin.getDataFolder().mkdirs();
@@ -58,7 +55,7 @@ public class FileManager {
 
     public void createLogFile(JavaPlugin plugin) {
         File logsFolder = new File(plugin.getDataFolder(), "logs");
-        if (!logsFolder.exists()){
+        if (!logsFolder.exists()) {
             logsFolder.mkdirs();
         }
         Date date = new Date();
@@ -74,11 +71,11 @@ public class FileManager {
         }
     }
 
-    public static File getTilesetsFolder(){
+    public static File getTilesetsFolder() {
         return new File(SimpleDungeonGenerator.instance().getDataFolder(), "tilesets");
     }
 
-    public static DungeonFloorConfiguration readTilesetConfig(File folder){
+    public static DungeonFloorConfiguration readTilesetConfig(File folder) {
         DungeonFloorConfiguration dungeonFloorConfiguration = new DungeonFloorConfiguration();
         File file = new File(folder, "config.yml");
         if (!file.exists()) return null;
@@ -93,7 +90,7 @@ public class FileManager {
             dungeonFloorConfiguration.setPathLength(20);
         }
 
-        if (fileConfiguration.isConfigurationSection("Filler")){
+        if (fileConfiguration.isConfigurationSection("Filler")) {
             String filler = fileConfiguration.getString("Filler.name");
             int fillerLevel = fileConfiguration.getInt("Filler.level");
             dungeonFloorConfiguration.setFiller(filler);
@@ -117,7 +114,7 @@ public class FileManager {
                 HashMap<Direction, RoomConfigurationOpening> openings = new HashMap<>();
                 ConfigurationSection openingsSection = fileConfiguration.getConfigurationSection("Rooms." + path + ".Openings");
                 if (openingsSection == null) continue;
-                for (String dir : openingsSection.getKeys(false)){
+                for (String dir : openingsSection.getKeys(false)) {
                     try {
                         Direction direction = Direction.valueOf(dir);
                         int x = openingsSection.getInt(dir + ".x");
@@ -126,7 +123,7 @@ public class FileManager {
 
                         RoomConfigurationOpening opening = new RoomConfigurationOpening(x, y, z, direction);
                         openings.put(direction, opening);
-                    } catch (IllegalArgumentException e){
+                    } catch (IllegalArgumentException e) {
                         SimpleDungeonGenerator.instance().getLogger().severe(dir + " is not a valid direction!");
                         return null;
                     }
@@ -143,7 +140,7 @@ public class FileManager {
         return dungeonFloorConfiguration;
     }
 
-    public static void createTilesetConfig(String tileSet){
+    public static void createTilesetConfig(String tileSet) {
         File folder = new File(getTilesetsFolder(), tileSet);
         File file = new File(folder, "config.yml");
         if (file.exists()) return;
@@ -153,11 +150,11 @@ public class FileManager {
         fc.set("Filler.level", 0);
         File[] files = folder.listFiles();
         if (files == null) return;
-        for (int i = 0; i < files.length; i++){
+        for (int i = 0; i < files.length; i++) {
             File f = files[i];
             String path = f.getName().replace(".schem", "");
-            fc.set("Rooms."+path+".RoomType", RoomType.GENERIC.toString());
-            fc.set("Rooms."+path+".Limit", -1);
+            fc.set("Rooms." + path + ".RoomType", RoomType.GENERIC.toString());
+            fc.set("Rooms." + path + ".Limit", -1);
 
             Clipboard clipboard = WEUtils.loadSchem(f);
             if (clipboard == null) continue;
@@ -185,7 +182,7 @@ public class FileManager {
         save(fc, file);
     }
 
-    public static void log(String message){
+    public static void log(String message) {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
         FileWriter fileWriter = null;
@@ -194,12 +191,12 @@ public class FileManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try(PrintWriter pw = new PrintWriter(fileWriter) ) {
+        try (PrintWriter pw = new PrintWriter(fileWriter)) {
             pw.println("[" + format.format(date) + "] " + message);
         }
     }
 
-    private static void save(FileConfiguration fileConfiguration, File file){
+    private static void save(FileConfiguration fileConfiguration, File file) {
         try {
             fileConfiguration.save(file);
         } catch (IOException e) {

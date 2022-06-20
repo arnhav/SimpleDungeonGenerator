@@ -10,7 +10,8 @@ public class DungeonFloorConfiguration {
     private String filler;
     private List<RoomConfiguration> rooms;
 
-    public DungeonFloorConfiguration(){}
+    public DungeonFloorConfiguration() {
+    }
 
     public void setPathLength(int pathLength) {
         this.pathLength = pathLength;

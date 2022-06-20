@@ -5,10 +5,11 @@ import net.runeage.simpledungeongenerator.commands.SDGCommand;
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.listeners.DungeonFloorListener;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
-import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
-import net.runeage.simpledungeongenerator.util.DungeonGenerator;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.logging.Logger;
 
 public final class SimpleDungeonGenerator extends JavaPlugin implements SimpleDungeonGeneratorService {
 
@@ -27,12 +28,16 @@ public final class SimpleDungeonGenerator extends JavaPlugin implements SimpleDu
         // Plugin shutdown logic
     }
 
-    public static SimpleDungeonGenerator instance(){
+    public static SimpleDungeonGenerator instance() {
         return SimpleDungeonGenerator.getPlugin(SimpleDungeonGenerator.class);
     }
 
+    public static Logger log() {
+        return instance().getLogger();
+    }
+
     @Override
-    public DungeonFloor generateDungeonFloorLayout(String tileSet) {
+    public CompletableFuture<DungeonFloor> generateDungeonFloorLayout(String tileSet) {
         return DungeonGenerator.generateDungeon(tileSet, tileSet);
     }
 

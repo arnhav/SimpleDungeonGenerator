@@ -4,7 +4,7 @@ import com.sk89q.worldedit.util.Direction;
 
 public class DirectionUtil {
 
-    public static Direction getInverse(Direction direction){
+    public static Direction getInverse(Direction direction) {
         if (direction == Direction.NORTH)
             return Direction.SOUTH;
         if (direction == Direction.SOUTH)

@@ -12,12 +12,13 @@ import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.util.SideEffect;
 import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.concurrent.CompletableFuture;
 
 public class WEUtils {
 
@@ -30,27 +31,32 @@ public class WEUtils {
         return null;
     }
 
-    public static void pasteSchem(World world, Clipboard clipboard, int x, int y, int z){
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-            //editSession.getSideEffectApplier().with(SideEffect.UPDATE, SideEffect.State.OFF);
-            //editSession.getSideEffectApplier().with(SideEffect.NEIGHBORS, SideEffect.State.OFF);
-            Operation operation = new ClipboardHolder(clipboard)
-                    .createPaste(editSession)
-                    .to(BlockVector3.at(x, y, z))
-                    .build();
-            Operations.complete(operation);
-        } catch (WorldEditException e) {
-            e.printStackTrace();
-        }
+    public static CompletableFuture<Boolean> pasteSchem(World world, Clipboard clipboard, int x, int y, int z) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        Bukkit.getScheduler().runTaskAsynchronously(SimpleDungeonGenerator.instance(), () -> {
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+                Operation operation = new ClipboardHolder(clipboard)
+                        .createPaste(editSession)
+                        .to(BlockVector3.at(x, y, z))
+                        .build();
+                Operations.complete(operation);
+                future.complete(true);
+            } catch (WorldEditException e) {
+                e.printStackTrace();
+            }
+        });
+        return future;
     }
 
-    public static void pasteFile(File folder, String fileName, World world, int x, int y, int z){
+    public static CompletableFuture<Boolean> pasteFile(File folder, String fileName, World world, int x, int y, int z) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         File file = new File(folder, fileName + ".schem");
         if (file.exists()){
             Clipboard clipboard = loadSchem(file);
-            pasteSchem(world, clipboard, x, y, z);
+            future = pasteSchem(world, clipboard, x, y, z);
         } else {
             SimpleDungeonGenerator.instance().getLogger().warning("File: '" + fileName + "' not found!");
         }
+        return future;
     }
 }

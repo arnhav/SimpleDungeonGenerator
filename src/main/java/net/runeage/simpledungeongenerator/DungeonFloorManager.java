@@ -1,4 +1,4 @@
-package net.runeage.simpledungeongenerator.util;
+package net.runeage.simpledungeongenerator;
 
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
@@ -35,7 +35,7 @@ public class DungeonFloorManager {
         File worldFile = new File(Bukkit.getWorldContainer(), df.getWorld());
         FileManager.deleteDirectory(worldFile);
         dungeonFloors.remove(df);
-        System.out.println("Dungeon Floor " + df.getName() + " deleted.");
+        SimpleDungeonGenerator.log().info("Dungeon Floor " + df.getName() + " deleted.");
         return true;
     }
 

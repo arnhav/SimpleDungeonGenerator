@@ -3,7 +3,7 @@ package net.runeage.simpledungeongenerator.listeners;
 import net.runeage.simpledungeongenerator.api.DungeonRoomPasteEvent;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonChunk;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
-import net.runeage.simpledungeongenerator.util.DungeonFloorManager;
+import net.runeage.simpledungeongenerator.DungeonFloorManager;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,13 +19,13 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class DungeonFloorListener implements Listener {
 
     @EventHandler
-    public void onRoomPaste(DungeonRoomPasteEvent event){
+    public void onRoomPaste(DungeonRoomPasteEvent event) {
         World w = event.getWorld();
         DungeonRoom dr = event.getDungeonRoom();
-        for (DungeonChunk dc : dr.getChunks()){
+        for (DungeonChunk dc : dr.getChunks()) {
             Chunk c = w.getChunkAt(dc.getX(), dc.getZ());
             BlockState[] bss = c.getTileEntities();
-            for (BlockState bs : bss){
+            for (BlockState bs : bss) {
                 BlockData bd = bs.getBlockData();
                 if (!(bd instanceof Jigsaw)) continue;
                 String orientation = ((Jigsaw) bd).getOrientation().toString().split("_")[0];
@@ -36,7 +36,7 @@ public class DungeonFloorListener implements Listener {
     }
 
     @EventHandler
-    public void onQuit(PlayerQuitEvent event){
+    public void onQuit(PlayerQuitEvent event) {
         Player p = event.getPlayer();
         Location loc = DungeonFloorManager.playerLocations.get(p);
         if (loc == null) return;

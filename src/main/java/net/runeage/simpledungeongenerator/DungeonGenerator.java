@@ -1,6 +1,5 @@
-package net.runeage.simpledungeongenerator.util;
+package net.runeage.simpledungeongenerator;
 
-import net.runeage.simpledungeongenerator.SimpleDungeonGenerator;
 import net.runeage.simpledungeongenerator.api.DungeonRoomPasteEvent;
 import net.runeage.simpledungeongenerator.data.FileManager;
 import net.runeage.simpledungeongenerator.objects.DungeonFloor;
@@ -9,6 +8,9 @@ import net.runeage.simpledungeongenerator.objects.EmptyChunkGenerator;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonChunk;
 import net.runeage.simpledungeongenerator.objects.generation.DungeonRoom;
 import net.runeage.simpledungeongenerator.objects.generation.RoomConfiguration;
+import net.runeage.simpledungeongenerator.util.GenerationUtil;
+import net.runeage.simpledungeongenerator.util.RoomConfigurationUtil;
+import net.runeage.simpledungeongenerator.util.WEUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.World;
@@ -27,12 +29,14 @@ public class DungeonGenerator {
             File tilesetFolder = new File(FileManager.getTilesetsFolder(), tileset);
             DungeonFloorConfiguration dungeonFloorConfiguration = FileManager.readTilesetConfig(tilesetFolder);
             if (dungeonFloorConfiguration == null) {
-                SimpleDungeonGenerator.instance().getLogger().severe("Tileset Config File not loaded!");
+                future.cancel(true);
+                SimpleDungeonGenerator.log().severe("Tileset Config File not loaded!");
                 return;
             }
             List<RoomConfiguration> rooms = dungeonFloorConfiguration.getRooms();
             if (rooms == null || rooms.isEmpty()) {
-                SimpleDungeonGenerator.instance().getLogger().severe("Tileset Config File error!");
+                future.cancel(true);
+                SimpleDungeonGenerator.log().severe("Tileset Config File error!");
                 return;
             }
 
@@ -40,7 +44,8 @@ public class DungeonGenerator {
 
             RoomConfiguration roomConfig = RoomConfigurationUtil.findAndSelectStartRoom(rooms);
             if (roomConfig == null) {
-                SimpleDungeonGenerator.instance().getLogger().severe("No Start Room defined!");
+                SimpleDungeonGenerator.log().severe("No Start Room defined!");
+                future.cancel(true);
                 return;
             }
             DungeonChunk startChunk = new DungeonChunk(worldName, 0, 0, 0);
@@ -48,11 +53,11 @@ public class DungeonGenerator {
             DungeonRoom start = new DungeonRoom(chunks, roomConfig);
             dungeonFloor.addRoom(start);
 
-            DungeonFloorUtil.generateNextRoom(dungeonFloor, start, 0);
-            DungeonFloorUtil.generateBossRoom(dungeonFloor);
-            DungeonFloorUtil.generateEndCaps(dungeonFloor);
-            DungeonFloorUtil.updateRooms(dungeonFloor);
-            DungeonFloorUtil.collectSurroundingEmptyChunks(dungeonFloor);
+            GenerationUtil.generateNextRoom(dungeonFloor, start, 0);
+            GenerationUtil.generateBossRoom(dungeonFloor);
+            GenerationUtil.generateEndCaps(dungeonFloor);
+            GenerationUtil.updateRooms(dungeonFloor);
+            GenerationUtil.collectSurroundingEmptyChunks(dungeonFloor);
 
             dungeonFloor.setDungeonFloorConfiguration(dungeonFloorConfiguration);
             future.complete(dungeonFloor);
@@ -61,13 +66,13 @@ public class DungeonGenerator {
     }
 
     public static boolean createWorld(String worldName) {
-        System.out.println("Creating world...");
+        SimpleDungeonGenerator.log().info("Creating world...");
         WorldCreator worldCreator = new WorldCreator(worldName);
         worldCreator.generator(new EmptyChunkGenerator());
 
         World world = worldCreator.createWorld();
         if (world == null) {
-            SimpleDungeonGenerator.instance().getLogger().severe("World Creation Error!");
+            SimpleDungeonGenerator.log().severe("World Creation Error!");
             return false;
         }
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
@@ -76,7 +81,8 @@ public class DungeonGenerator {
         world.setGameRule(GameRule.MOB_GRIEFING, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-        System.out.println("World created...");
+        SimpleDungeonGenerator.log().info("World created...");
+        System.out.println("Getting here");
         return true;
     }
 
@@ -89,16 +95,16 @@ public class DungeonGenerator {
         File tilesetFolder = new File(FileManager.getTilesetsFolder(), dungeonFloor.getTileset());
         World world = Bukkit.getWorld(dungeonFloor.getWorld());
         if (world == null) {
-            SimpleDungeonGenerator.instance().getLogger().severe("World not created!");
+            SimpleDungeonGenerator.log().severe("World not created!");
             return false;
         }
-        System.out.println("Pasting filler...");
+        SimpleDungeonGenerator.log().info("Pasting filler...");
         LinkedBlockingQueue<DungeonChunk> toPaste = new LinkedBlockingQueue<>(dungeonFloor.getFillers());
         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
             @Override
             public void run() {
                 if (toPaste.isEmpty()) {
-                    System.out.println("Done pasting filler...");
+                    SimpleDungeonGenerator.log().info("Done pasting filler...");
                     dungeonFloor.setReady(true);
                     return;
                 }
@@ -129,16 +135,16 @@ public class DungeonGenerator {
         File tilesetFolder = new File(FileManager.getTilesetsFolder(), dungeonFloor.getTileset());
         World world = Bukkit.getWorld(dungeonFloor.getWorld());
         if (world == null) {
-            SimpleDungeonGenerator.instance().getLogger().severe("World not created!");
+            SimpleDungeonGenerator.log().severe("World not created!");
             return false;
         }
-        System.out.println("Pasting rooms...");
+        SimpleDungeonGenerator.log().info("Pasting rooms...");
         LinkedBlockingQueue<DungeonRoom> roomsToPaste = new LinkedBlockingQueue<>(dungeonFloor.getRooms());
         Bukkit.getScheduler().runTaskLater(SimpleDungeonGenerator.instance(), new Runnable() {
             @Override
             public void run() {
                 if (roomsToPaste.isEmpty()) {
-                    System.out.println("Done pasting rooms...");
+                    SimpleDungeonGenerator.log().info("Done pasting rooms...");
                     placeFillers(dungeonFloor);
                     return;
                 }

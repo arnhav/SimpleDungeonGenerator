@@ -7,7 +7,7 @@ public class RoomConfigurationOpening {
     private int x, y, z;
     private Direction direction;
 
-    public RoomConfigurationOpening(int x, int y, int z, Direction direction){
+    public RoomConfigurationOpening(int x, int y, int z, Direction direction) {
         setX(x);
         setY(y);
         setZ(z);

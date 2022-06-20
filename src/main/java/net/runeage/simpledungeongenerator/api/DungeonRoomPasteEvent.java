@@ -15,7 +15,7 @@ public class DungeonRoomPasteEvent extends Event {
     private DungeonFloor dungeonFloor;
     private DungeonRoom dungeonRoom;
 
-    public DungeonRoomPasteEvent(World world, DungeonFloor dungeonFloor, DungeonRoom dungeonRoom){
+    public DungeonRoomPasteEvent(World world, DungeonFloor dungeonFloor, DungeonRoom dungeonRoom) {
         this.world = world;
         this.dungeonFloor = dungeonFloor;
         this.dungeonRoom = dungeonRoom;

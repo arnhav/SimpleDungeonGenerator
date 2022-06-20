@@ -8,7 +8,7 @@ public class DungeonRoom {
     private List<DungeonChunk> chunks;
     private boolean pasted;
 
-    public DungeonRoom(List<DungeonChunk> chunks, RoomConfiguration roomConfiguration){
+    public DungeonRoom(List<DungeonChunk> chunks, RoomConfiguration roomConfiguration) {
         setChunks(chunks);
         setRoomConfiguration(roomConfiguration);
         setPasted(false);
@@ -38,10 +38,10 @@ public class DungeonRoom {
         return pasted;
     }
 
-    public DungeonChunk getPasteChunk(){
+    public DungeonChunk getPasteChunk() {
         if (chunks.isEmpty()) return null;
         DungeonChunk pc = chunks.get(0);
-        for (DungeonChunk dc : chunks){
+        for (DungeonChunk dc : chunks) {
             if (dc.getX() <= pc.getX() && dc.getZ() <= pc.getZ() && dc.getLevel() <= pc.getLevel())
                 pc = dc;
         }
